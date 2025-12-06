@@ -1,0 +1,3 @@
+[submodule "2025/rust"]
+	path = 2025/rust
+	url = git@github.com:CongLuanTran/advent-of-code-2025-rust.git
