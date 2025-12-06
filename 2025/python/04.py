@@ -25,59 +25,37 @@ direction = [
 
 
 def part1(note: str):
-    diagram = note.splitlines()
-    w = len(diagram[0])
-    h = len(diagram)
-    cnt = 0
+    grid = note.splitlines()
+    rolls = {
+        complex(x, y)
+        for y, row in enumerate(grid)
+        for x, c in enumerate(row)
+        if c == "@"
+    }
+    neighbours = {
+        r: {r + complex(x, y) for x in (-1, 0, 1) for y in (-1, 0, 1) if x or y}
+        for r in rolls
+    }
 
-    for y in range(h):
-        for x in range(w):
-            if diagram[y][x] != "@":
-                continue
-            adj = 0
-            for dy, dx in direction:
-                if (
-                    0 <= y + dy < h
-                    and 0 <= x + dx < w
-                    and diagram[y + dy][x + dx] == "@"
-                ):
-                    adj += 1
-                    if adj >= 4:
-                        break
-            else:
-                cnt += 1
-
-    return cnt
+    return sum(1 for r in rolls if len(neighbours[r] & rolls) < 4)
 
 
 def part2(note: str):
-    diagram = [list(line) for line in note.splitlines()]
-    w = len(diagram[0])
-    h = len(diagram)
+    grid = note.splitlines()
+    rolls = {
+        complex(x, y)
+        for y, row in enumerate(grid)
+        for x, c in enumerate(row)
+        if c == "@"
+    }
+    neighbours = {
+        r: {r + complex(x, y) for x in (-1, 0, 1) for y in (-1, 0, 1) if x or y}
+        for r in rolls
+    }
     cnt = 0
-
-    while True:
-        can_remove = 0
-        for y in range(h):
-            for x in range(w):
-                if diagram[y][x] != "@":
-                    continue
-                adj = 0
-                for dy, dx in direction:
-                    if (
-                        0 <= y + dy < h
-                        and 0 <= x + dx < w
-                        and diagram[y + dy][x + dx] == "@"
-                    ):
-                        adj += 1
-                        if adj >= 4:
-                            break
-                else:
-                    can_remove += 1
-                    diagram[y][x] = "x"
-        if not can_remove:
-            break
-        cnt += can_remove
+    while removals := {r for r in rolls if len(neighbours[r] & rolls) < 4}:
+        rolls -= removals
+        cnt += len(removals)
 
     return cnt
 
